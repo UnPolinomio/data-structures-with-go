@@ -1,3 +1,3 @@
-module github.com/unpolinomio/data-structures-go
+module github.com/unpolinomio/data-structures-with-go
 
 go 1.16

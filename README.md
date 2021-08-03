@@ -9,19 +9,21 @@ This is a collection of some data structures with Go. They're built with TDD.
 
 ## Example
 ```go
-import (
-    "fmt"
+package main
 
-    datas "github.com/unpolinomio/data-structures-with-go"
+import (
+	"fmt"
+
+	datas "github.com/unpolinomio/data-structures-with-go"
 )
 
 func main() {
-    list := datas.SynglyLinkedList{}
-    list.PushFront(10)
-    list.PushFront(20)
-    list.PushFront(30)
-    
-    fmt.Println(list.Get(1))
+	list := datas.SynglyLinkedList{}
+	list.PushFront(10)
+	list.PushFront(20)
+	list.PushFront(30)
+
+	fmt.Println(list.Get(1))
 }
 ```
 
