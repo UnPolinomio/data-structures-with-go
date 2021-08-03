@@ -147,27 +147,46 @@ func createSynglyLikedNodeSequence(values []interface{}) (start, end *synglyLike
 }
 
 func (l *SynglyLinkedList) Splice(index int, delCount int, values ...interface{}) {
-	if index < 0 || index+delCount > l.Size() {
+	aindex := index + delCount
+	if index < 0 || aindex > l.Size() {
 		panic(fmt.Sprintf(_OUT_OF_RANGE, index, l.Size()))
 	}
 
-	before := l.head
+	var before *synglyLikedNode = nil
 	if index >= 1 {
 		before = l.getNode(index - 1)
 	}
 
-	after := l.tail
-	aindex := index + delCount
+	var after *synglyLikedNode = nil
 	if aindex < l.Size() {
 		after = l.getNode(aindex)
 	}
-	start, end := createSynglyLikedNodeSequence(values)
 
+	start, end := createSynglyLikedNodeSequence(values) // start, end != nil
 	if len(values) == 0 {
-		before.next = after
+		if before != nil { // index >= 1
+			before.next = after
+			if after == nil { // index == l.Size() - 1
+				l.head = before
+			}
+		} else { // index == 0
+			l.head = after
+			if after == nil { // index == l.Size() - 1
+				l.tail = nil
+			}
+		}
 	} else {
-		before.next = start
-		end.next = after
+		if before != nil {
+			before.next = start
+		} else {
+			l.head = start
+		}
+		if after != nil {
+			end.next = after
+		} else {
+			l.tail = end
+		}
 	}
+
 	l.size = l.Size() + len(values) - delCount
 }

@@ -17,6 +17,16 @@ func testSlicesAreEqual(got, expected []interface{}) error {
 	return nil
 }
 
+func copySynglyLinkedList(l *SynglyLinkedList) *SynglyLinkedList {
+	newList := &SynglyLinkedList{}
+
+	for node := l.head; node != nil; node = node.next {
+		newList.PushBack(node.value)
+	}
+
+	return newList
+}
+
 func TestSlice(t *testing.T) {
 	l := SynglyLinkedList{}
 	l.PushFront(10)
@@ -130,28 +140,75 @@ func TestPopBack(t *testing.T) {
 }
 
 func TestSplice(t *testing.T) {
-	l := SynglyLinkedList{}
+	l := &SynglyLinkedList{}
 	l.PushFront(10)
 	l.PushFront(20)
 	l.PushBack(30)
 	l.PushBack(40) // l = [20, 10, 30, 40]
 
-	l.Splice(1, 2, 100, 200, 300) // l = [20, 100, 200, 300, 40]
-
-	got := l.Slice()
-	expected := []interface{}{20, 100, 200, 300, 40}
-
-	err := testSlicesAreEqual(got, expected)
-	if err != nil {
-		t.Errorf(err.Error())
+	tests := []struct {
+		index    int
+		delCount int
+		values   []interface{}
+		expected []interface{}
+	}{
+		{
+			index:    0,
+			delCount: l.Size(),
+			values:   []interface{}{1, 2, 3},
+			expected: []interface{}{1, 2, 3},
+		},
+		{
+			index:    0,
+			delCount: l.Size(),
+			values:   []interface{}{},
+			expected: []interface{}{},
+		},
+		{
+			index:    1,
+			delCount: l.Size() - 1,
+			values:   []interface{}{1, 2, 3},
+			expected: []interface{}{20, 1, 2, 3},
+		},
+		{
+			index:    1,
+			delCount: l.Size() - 1,
+			values:   []interface{}{},
+			expected: []interface{}{20},
+		},
+		{
+			index:    0,
+			delCount: 1,
+			values:   []interface{}{1, 2, 3},
+			expected: []interface{}{1, 2, 3, 10, 30, 40},
+		},
+		{
+			index:    2,
+			delCount: 0,
+			values:   []interface{}{100, 200, 300},
+			expected: []interface{}{20, 10, 100, 200, 300, 30, 40},
+		},
+		{
+			index:    2,
+			delCount: 0,
+			values:   []interface{}{},
+			expected: []interface{}{20, 10, 30, 40},
+		},
+		{
+			index:    1,
+			delCount: 1,
+			values:   []interface{}{100, 200, 300},
+			expected: []interface{}{20, 100, 200, 300, 30, 40},
+		},
 	}
-
-	l.Splice(0, l.Size())
-	got = l.Slice()
-	expected = []interface{}{}
-	err = testSlicesAreEqual(got, expected)
-	if err != nil {
-		t.Errorf(err.Error())
+	// l = [20, 10, 30, 40]
+	for _, test := range tests {
+		lCopy := copySynglyLinkedList(l)
+		lCopy.Splice(test.index, test.delCount, test.values...)
+		err := testSlicesAreEqual(lCopy.Slice(), test.expected)
+		if err != nil {
+			t.Error(err.Error())
+		}
 	}
 }
 
